@@ -22,6 +22,7 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
+TEMP_HISTORY := temp_history.md
 
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
@@ -63,6 +64,13 @@ coverage: ## check code coverage quickly with the default Python
 		coverage report -m
 		coverage html
 		$(BROWSER) htmlcov/index.html
+
+changes:  ## Update the change log
+	auto-changelog --output=$(TEMP_HISTORY) \
+		--title="Change Log" \
+		--desc="A system that evaluates the kwalitee of all the packages on PyPI."
+	pandoc $(TEMP_HISTORY) --from=markdown --to=rst -s -o HISTORY.rst
+	$(RM) $(TEMP_HISTORY)
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/cheesecake_kwalitee_index.rst

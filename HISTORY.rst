@@ -1,8 +1,12 @@
-=======
-History
-=======
+Change Log
+==========
 
-0.1.0 (2016-07-20)
-------------------
+A system that evaluates the kwalitee of all the packages on PyPI.
 
-* First release on PyPI.
+v0.1.1 (2016-19-20)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+
+-  Initial Commit
