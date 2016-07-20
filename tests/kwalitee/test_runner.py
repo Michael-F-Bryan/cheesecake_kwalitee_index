@@ -48,3 +48,29 @@ class TestLint:
         runner.download(name + '==' + version, temp_dir)
         score = runner.lint(temp_dir, name.replace('-', '_'))
         assert str(score) == '3.6'
+
+    def test_invalid(self, temp_dir):
+        # We need to specify the exact version for a small package 
+        # In this case, we know version 0.1.5 of auto-changelog gets
+        # 3.60 out of 10
+        name = '1232ewcfswcas'
+        version = '0.1.5'
+        runner.download(name + '==' + version, temp_dir)
+
+        with pytest.raises(RuntimeError):
+            score = runner.lint(temp_dir, name.replace('-', '_'))
+
+
+
+@pytest.fixture
+def ev(request):
+    ev = runner.Evaluater('auto-changelog', '0.1.5')
+    return ev
+    
+
+class TestEvaluator:
+    def test_init(self, ev):
+        assert ev.package == 'auto-changelog'
+        assert ev.version == '0.1.5'
+        assert isinstance(ev.score, dict) 
+        assert isinstance(ev.score['lint'], runner.Score)
