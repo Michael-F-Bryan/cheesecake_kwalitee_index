@@ -90,3 +90,17 @@ class TestEvaluator:
         ev = runner.Evaluater('23twfevadsfg', '0.1.5')
         ret = ev.install_package()
         assert ret == 0
+
+    def test_linter(self, ev):
+        assert ev.install_package() != 0
+
+        # run the linter
+        lint_score = ev.lint_test()
+        assert lint_score == 36
+
+    def test_evalualate_score(self, ev):
+        score, total = ev.evaluate_score()
+        print(score, total)
+
+        assert total == sum(value.total for value in ev.score.values())
+        assert score == 10 + 36

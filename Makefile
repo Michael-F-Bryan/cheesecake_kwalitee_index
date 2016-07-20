@@ -23,7 +23,7 @@ endef
 export PRINT_HELP_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 TEMP_HISTORY := temp_history.md
-PYTEST_ARGS := --capture=sys --verbose
+PYTEST_ARGS := --capture=sys --verbose -n 4
 
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
@@ -59,7 +59,7 @@ test: ## run tests quickly with the default Python
 tests: test
 
 test-all: ## run tests on every Python version with tox
-	tox
+	tox 
 
 coverage: ## check code coverage quickly with the default Python
 	coverage run --source cheesecake_kwalitee_index -m pytest

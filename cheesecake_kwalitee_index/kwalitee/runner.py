@@ -10,10 +10,10 @@ import shutil
 import pip
 
 from cheesecake_kwalitee_index.utils import get_logger
+from cheesecake_kwalitee_index.kwalitee.models import Score
 
 
 logger = get_logger(__name__, 'stderr')
-Score = namedtuple('Score', ['value', 'total'])
 
 
 def download(package, dest):
@@ -73,10 +73,13 @@ class Evaluater:
     def evaluate_score(self):
         logger.info('Evaluating score for %s', self.package)
         try:
-            self.score['install'].value = self.install_package()
+            ins = self.score['install']
+            ins.value = self.install_package()
 
             # Stop early if we couldn't install
             if self.score['install'].value == 0:
+                print('EXITING EARLY!!!')
+                print(self.score)
                 return
 
             self.score['lint'].value = self.install_package()
@@ -92,7 +95,8 @@ class Evaluater:
         """
         Pass the package through the linter.
         """
-        return 10 * lint(self.dest, self.package.replace('-', '_'))
+        temp = lint(self.dest, self.package.replace('-', '_'))
+        return 10 * temp
 
     def install_package(self):
         """
