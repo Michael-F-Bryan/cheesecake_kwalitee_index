@@ -10,7 +10,10 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    # TODO: put package requirements here
+        'rq',
+        'SqlAlchemy',
+        'psycopg2',
+        'docopt',
 ]
 
 test_requirements = [

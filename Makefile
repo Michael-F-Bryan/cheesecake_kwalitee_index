@@ -23,6 +23,7 @@ endef
 export PRINT_HELP_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 TEMP_HISTORY := temp_history.md
+PYTEST_ARGS := --capture=sys
 
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
@@ -52,18 +53,18 @@ lint: ## check style with flake8
 	flake8 cheesecake_kwalitee_index tests
 
 test: ## run tests quickly with the default Python
-	py.test
+	py.test $(PYTEST_ARGS)
 	
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source cheesecake_kwalitee_index py.test
-	
-		coverage report -m
-		coverage html
-		$(BROWSER) htmlcov/index.html
+	coverage run --source cheesecake_kwalitee_index -m pytest
+	coverage report -m
+	coverage html
+	$(BROWSER) htmlcov/index.html
+
 
 changes:  ## Update the change log
 	auto-changelog --output=$(TEMP_HISTORY) \
