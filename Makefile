@@ -73,7 +73,7 @@ changes:  ## Update the change log
 	pandoc $(TEMP_HISTORY) --from=markdown --to=rst -s -o HISTORY.rst
 	$(RM) $(TEMP_HISTORY)
 
-docs: ## generate Sphinx HTML documentation, including API docs
+docs: changes ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/cheesecake_kwalitee_index.rst
 	rm -f docs/modules.rst
 	sphinx-apidoc -o docs/ cheesecake_kwalitee_index

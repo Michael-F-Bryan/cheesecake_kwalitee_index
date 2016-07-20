@@ -14,6 +14,7 @@ requirements = [
         'SqlAlchemy',
         'psycopg2',
         'docopt',
+        'auto-changelog',
 ]
 
 test_requirements = [
