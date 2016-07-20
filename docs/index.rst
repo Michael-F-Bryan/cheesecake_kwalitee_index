@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to cheesecake_kwalitee_index's documentation!
-======================================
+=====================================================
 
 Contents:
 
@@ -14,8 +14,11 @@ Contents:
    readme
    installation
    usage
+   architecture
+   modules
    contributing
-   authorshistory
+   authors
+   history
 
 Indices and tables
 ==================

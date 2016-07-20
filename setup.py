@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
@@ -14,7 +14,6 @@ requirements = [
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
 ]
 
 setup(
@@ -49,5 +48,5 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',
-    tests_require=test_requirements
+    tests_require=test_requirements,
 )

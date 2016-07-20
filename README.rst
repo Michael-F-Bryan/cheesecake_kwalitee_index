@@ -18,7 +18,7 @@ cheesecake_kwalitee_index
      :alt: Updates
 
 
-A system that evaluates the kwalitee of all the packages on PyPI
+A system that evaluates the kwalitee of all the packages on PyPI.
 
 
 * Free software: MIT license
