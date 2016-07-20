@@ -18,7 +18,7 @@ test_requirements = [
 
 setup(
     name='cheesecake_kwalitee_index',
-    version='0.1.0',
+    version='0.1.1',
     description="A system that evaluates the kwalitee of all the packages on PyPI",
     long_description=readme + '\n\n' + history,
     author="Michael F Bryan",
