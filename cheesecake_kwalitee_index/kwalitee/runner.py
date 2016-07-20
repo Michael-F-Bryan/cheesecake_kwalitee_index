@@ -3,10 +3,11 @@
 
 import os
 import re
-import glob
-import pip
 import subprocess
 from collections import namedtuple
+import tempfile
+import shutil
+import pip
 
 from cheesecake_kwalitee_index.utils import get_logger
 
@@ -15,25 +16,30 @@ logger = get_logger(__name__, 'stderr')
 Score = namedtuple('Score', ['value', 'total'])
 
 
-
 def download(package, dest):
     """
-    Download a package to a specified location.
+    Download a package to a specified location. Making sure to get a source
+    distribution.
     """
-    return pip.main(['install', 
-                     '--target', dest, 
-                     '--no-binary', ':all:', 
+    logger.info('Downloading %s', package)
+    return pip.main(['install',
+                     '--target', dest,
+                     '--no-binary', ':all:',
                      package])
 
 
 def lint(dest, name):
+    """
+    Run Pylint and get the overall score of a package.
+    """
     package = os.path.join(dest, name)
+    logger.info('Lint checking %s', name)
 
     cmd = 'pylint {}'.format(package)
-    proc = subprocess.Popen(cmd, 
-                          stdout=subprocess.PIPE, 
-                          stderr=subprocess.PIPE,
-                          shell=True)
+    proc = subprocess.Popen(cmd,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            shell=True)
     proc.wait()
 
     for line in proc.stdout.read().decode().splitlines():
@@ -42,32 +48,42 @@ def lint(dest, name):
             return float(score.group(1))
     else:
         # It couldn't find our score so there must have been an error
+        logger.error('Error while lint checking %s', package)
+        logger.error('Stdout = \n%s', proc.stdout.read().strip())
+        logger.error('Stderr = \n%s', proc.stderr.read().strip())
         raise RuntimeError('Linter failed with error code: {}'.format(
             proc.returncode))
 
 
 class Evaluater:
+    """
+    The Evaluator is in charge of downloading a package and evaluating
+    it against the cheesecake kwalitee index.
+    """
+
     def __init__(self, package, version='*'):
         self.package = package
         self.version = version
         self.score = {
-                'install': Score(0, 10),
-                'lint': Score(0, 100),
-                }
+            'install': Score(0, 10),
+            'lint': Score(0, 100),
+        }
+        self.dest = tempfile.mkdtemp(prefix='cheesecake_')
 
-    def score(self):
-        with tempfile.mkdtemp(prefix='cheesecake_') as dest:
-            self.dest = dest
-
-            self.score['install'].value = self.install_test()
+    def evaluate_score(self):
+        logger.info('Evaluating score for %s', self.package)
+        try:
+            self.score['install'].value = self.install_package()
 
             # Stop early if we couldn't install
             if self.score['install'].value == 0:
                 return
 
-            self.score['lint'].value = self.install_test()
+            self.score['lint'].value = self.install_package()
+        finally:
+            self.clean_up()
 
-        # Let the tempdir be deleted and return the final score
+        # Let the tempdir be deleted and return the final score as a tuple
         final_score = sum(s.value for s in self.score.values())
         total = sum(s.total for s in self.score.values())
         return final_score, total
@@ -78,9 +94,9 @@ class Evaluater:
         """
         return 10 * lint(self.dest, self.package.replace('-', '_'))
 
-    def install_test(self):
+    def install_package(self):
         """
-        Try to install the package. If it installs, you get 10 points. 
+        Try to install the package. If it installs, you get 10 points.
         Otherwise you get nothing.
         """
         package_version = self.package + '==' + self.version
@@ -91,5 +107,12 @@ class Evaluater:
         else:
             return self.score['install'].total
 
-
+    def clean_up(self):
+        """
+        Remove the installed directory and do any other necessary clean up.
+        """
+        if self.dest is not None:
+            logger.info('Cleaning up %s', self.dest)
+            shutil.rmtree(self.dest)
+            self.dest = None
 

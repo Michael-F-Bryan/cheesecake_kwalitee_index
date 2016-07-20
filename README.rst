@@ -1,6 +1,6 @@
-===============================
-cheesecake_kwalitee_index
-===============================
+=========================
+Cheesecake Kwalitee Index
+=========================
 
 
 .. image:: https://img.shields.io/pypi/v/cheesecake_kwalitee_index.svg
@@ -18,7 +18,7 @@ cheesecake_kwalitee_index
      :alt: Updates
 
 
-A system that evaluates the kwalitee of all the packages on PyPI.
+A system that evaluates the *kwalitee* of all the packages on PyPI.
 
 
 * Free software: MIT license
