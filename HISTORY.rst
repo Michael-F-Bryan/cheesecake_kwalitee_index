@@ -13,6 +13,7 @@ New Features
    tests
 -  Started writing the Evaluator which will evaluate the quality of
    people's code
+-  [kwalitee] Added a test to see if **version** is defined
 
 Documentation Changes
 ~~~~~~~~~~~~~~~~~~~~~

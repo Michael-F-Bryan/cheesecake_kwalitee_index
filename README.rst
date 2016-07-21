@@ -10,8 +10,8 @@ Cheesecake Kwalitee Index
     :target: https://travis-ci.org/Michael-F-Bryan/cheesecake_kwalitee_index
 
 .. image:: https://readthedocs.org/projects/cheesecake-kwalitee-index/badge/?version=latest
-        :target: https://cheesecake-kwalitee-index.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+    :target: http://cheesecake-kwalitee-index.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/Michael-F-Bryan/cheesecake_kwalitee_index/shield.svg
      :target: https://pyup.io/repos/github/Michael-F-Bryan/cheesecake_kwalitee_index/
