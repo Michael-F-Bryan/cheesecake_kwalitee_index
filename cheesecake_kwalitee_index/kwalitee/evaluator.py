@@ -1,13 +1,16 @@
 """
+The main suite of tests that are run to generate the cheesecake kwalitee
+index of a package.
 """
 
 import os
 import re
 import subprocess
-from collections import namedtuple
 import tempfile
 import shutil
 import pip
+import importlib
+import sys
 
 from cheesecake_kwalitee_index.utils import get_logger
 from cheesecake_kwalitee_index.kwalitee.models import Score
@@ -45,7 +48,7 @@ def lint(dest, name):
     for line in proc.stdout.read().decode().splitlines():
         if line.startswith('Your code has been rated at'):
             score = re.search(r'(-?\d+(?:\.\d+)?)/10', line)
-            return float(score.group(1))
+            break
     else:
         # It couldn't find our score so there must have been an error
         logger.error('Error while lint checking %s', package)
@@ -54,8 +57,22 @@ def lint(dest, name):
         raise RuntimeError('Linter failed with error code: {}'.format(
             proc.returncode))
 
+    return float(score.group(1))
 
-class Evaluater:
+
+def get_version_number(file_path, name):
+    # Add the file_path to sys.path
+    sys.path.append(file_path)
+
+    # Then import the package and bind it to a variable
+    pkg = importlib.import_module(name)
+    try:
+        return pkg.__version__
+    except AttributeError:
+        return None
+
+
+class Evaluator:
     """
     The Evaluator is in charge of downloading a package and evaluating
     it against the cheesecake kwalitee index.
@@ -63,14 +80,20 @@ class Evaluater:
 
     def __init__(self, package, version='*'):
         self.package = package
+        self.name = package.replace('-', '_')
         self.version = version
         self.score = {
             'install': Score(0, 10),
+            'version_number': Score(0, 10),
             'lint': Score(0, 100),
         }
         self.dest = tempfile.mkdtemp(prefix='cheesecake_')
+        self.version_number = None
 
     def evaluate_score(self):
+        """
+        Run the entire test suite and get the package's score.
+        """
         logger.info('Evaluating score for %s', self.package)
         try:
             ins = self.score['install']
@@ -78,11 +101,10 @@ class Evaluater:
 
             # Stop early if we couldn't install
             if self.score['install'].value == 0:
-                print('EXITING EARLY!!!')
-                print(self.score)
                 return
 
-            self.score['lint'].value = self.install_package()
+            self.score['version_number'].value = self.get_version()
+            self.score['lint'].value = self.lint_test()
         finally:
             self.clean_up()
 
@@ -91,11 +113,27 @@ class Evaluater:
         total = sum(s.total for s in self.score.values())
         return final_score, total
 
+    def get_version(self):
+        """
+        Get __version__. If __version__ exists then give 10 points, otherwise
+        zero.
+        """
+        file_path = os.path.join(self.dest, self.name)
+        version_number = get_version_number(file_path, self.name)
+
+        # Save the version number for later
+        self.version_number = version_number
+
+        if version_number is not None:
+            return 10
+        else:
+            return 0
+
     def lint_test(self):
         """
         Pass the package through the linter.
         """
-        temp = lint(self.dest, self.package.replace('-', '_'))
+        temp = lint(self.dest, self.name)
         return 10 * temp
 
     def install_package(self):
@@ -119,4 +157,3 @@ class Evaluater:
             logger.info('Cleaning up %s', self.dest)
             shutil.rmtree(self.dest)
             self.dest = None
-
