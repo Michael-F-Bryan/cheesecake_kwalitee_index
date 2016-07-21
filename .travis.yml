@@ -22,7 +22,7 @@ deploy:
       SkhQTW9TaGVpSFEzZFJ5U1cwRXg3T0p4UFJwcjVWQ09ZenhZa0ltWVlpb2FxMWRleHBQLzRJY1k9
 install: 
   - pip install -r requirements_dev.txt
-  - python setup.py install
+  - python3 setup.py install
 language: python
 python: 3.5
-script: make test
+script: py.test cheesecake_kwalitee_index
